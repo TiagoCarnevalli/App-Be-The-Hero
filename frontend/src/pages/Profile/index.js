@@ -1,19 +1,55 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { FiPower, FiTrash2 } from 'react-icons/fi';
+import api from '../../services/api';
 import './styles.css';
 
 import logoImg from '../../assets/logo.svg'
+import { useState } from 'react';
 
 export default function Profile() {
+    const history = useHistory();
+    const [incidents, setIncidents] = useState([]);
+    const ongId = localStorage.getItem('ongId');
+    const ongName = localStorage.getItem('ongName');
+
+    useEffect(() => {
+        api.get('profile', {
+            headers: {
+                Authorization: ongId
+            }
+        }).then(response => {
+            setIncidents(response.data);
+        })
+    }, [ongId]);
+
+    async function handleDeleteIncident(id) {
+        try{
+            await api.delete(`incidents/${id}`, {
+                headers: {
+                    Authorization: ongId
+                }
+            });
+
+            setIncidents(incidents.filter(incident => incident.id !== id));
+        } catch (err) {
+            alert('Erro ao deletar o caso, tente novamente');
+        }
+    }
+
+    function handleLogout() {
+        localStorage.clear();
+        history.push('/');
+    }
+
     return(
         <div className="profile-container">
             <header>
                 <img src={ logoImg } alt="Be The Hero" />
-                <span>Bem vindo</span>
+                <span>Bem vinda, {ongName}</span>
 
                 <Link className="button" to="/incidents/new">Cadastrar Novo Caso</Link>
-                <button type="button">
+                <button onClick={handleLogout} type="button">
                     <FiPower size={18} color="#e02041" />
                 </button>
             </header>
@@ -21,65 +57,23 @@ export default function Profile() {
             <h1>Casos Cadastrados</h1>
 
             <ul>
-                <li>
-                    <strong>Caso:</strong>
-                    <p>Caso Teste 1</p>
+                {incidents.map(incident => (
+                    <li key={incident.id}>
+                        <strong>Caso:</strong>
+                        <p>{incident.title}</p>
 
-                    <strong>Descrição:</strong>
-                    <p>Descrição detalhada do caso teste 1.</p>
+                        <strong>Descrição:</strong>
+                        <p>{incident.description}</p>
 
-                    <strong>Valor:</strong>
-                    <p>R$125,00</p>
+                        <strong>Valor:</strong>
+                        <p>{Intl.NumberFormat('pt-BR',{style: 'currency', currency: 'BRL'})
+                        .format(incident.value)}</p>
 
-                    <button type="button">
-                        <FiTrash2 size={20} color="#a8a8b3" />
-                    </button>
-                </li>
-                
-                <li>
-                    <strong>Caso:</strong>
-                    <p>Caso Teste 2</p>
-
-                    <strong>Descrição:</strong>
-                    <p>Descrição detalhada do caso teste 2.</p>
-
-                    <strong>Valor:</strong>
-                    <p>R$255,00</p>
-
-                    <button type="button">
-                        <FiTrash2 size={20} color="#a8a8b3" />
-                    </button>
-                </li>
-                
-                <li>
-                    <strong>Caso:</strong>
-                    <p>Caso Teste 3</p>
-
-                    <strong>Descrição:</strong>
-                    <p>Descrição detalhada do caso teste 3.</p>
-
-                    <strong>Valor:</strong>
-                    <p>R$225,00</p>
-
-                    <button type="button">
-                        <FiTrash2 size={20} color="#a8a8b3" />
-                    </button>
-                </li>
-                
-                <li>
-                    <strong>Caso:</strong>
-                    <p>Caso Teste 4</p>
-
-                    <strong>Descrição:</strong>
-                    <p>Descrição detalhada do caso teste 4.</p>
-
-                    <strong>Valor:</strong>
-                    <p>R$155,00</p>
-
-                    <button type="button">
-                        <FiTrash2 size={20} color="#a8a8b3" />
-                    </button>
-                </li>
+                        <button onClick={() => handleDeleteIncident(incident.id)} type="button">
+                            <FiTrash2 size={20} color="#a8a8b3" />
+                        </button>
+                    </li>
+                ))}
             </ul>
         </div>
     );
