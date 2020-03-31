@@ -44,14 +44,8 @@ export default function Detail()
                 </TouchableOpacity>
             </View>
 
-            <FlatList
-                marginTop={10}
-                data={[1]}
-                style={styles.incidentList}
-                keyExtractor={incident => String(incident.id)} 
-                showsVerticalScrollIndicator={false}
-                renderItem={() => (
-                    <View style={styles.incident}>
+            
+            <View style={styles.incident}>
                         <Text style={styles.incidentProperty}>ONG:</Text>
                         <Text style={styles.incidentValue}>{incident.name} de {incident.city} - {incident.uf}</Text>
                                 
@@ -59,16 +53,25 @@ export default function Detail()
                         <Text style={styles.incidentValue}>{incident.title}</Text>
                                 
                         <Text style={styles.incidentProperty}>Descrição:</Text>
-                        <Text style={styles.incidentValue}>{incident.description}</Text>
+
+                <FlatList
+                    marginTop={2}
+                    data={[1]}
+                    style={styles.incidentList}
+                    keyExtractor={incident => String(incident.id)} 
+                    renderItem={() => (
+                        <View>
+                            <Text style={styles.incidentValue}>{incident.description}</Text>
+                        </View>
+                    )}
+                />
                                 
-                        <Text style={styles.incidentProperty}>Valor:</Text>
-                        <Text style={styles.incidentValue}>{Intl.NumberFormat('pt-BR', 
-                                                {style: 'currency', 
-                                                currency: 'BRL'})
-                                            .format(incident.value)}</Text>
-                    </View>
-                )}
-            />
+                <Text style={styles.incidentProperty}>Valor:</Text>
+                <Text style={styles.incidentValue}>{Intl.NumberFormat('pt-BR', 
+                                        {style: 'currency', 
+                                        currency: 'BRL'})
+                                    .format(incident.value)}</Text>
+            </View>
 
             <View style={styles.contactBox}>
                 <Text style={styles.heroTitle}>Salve o dia!</Text>

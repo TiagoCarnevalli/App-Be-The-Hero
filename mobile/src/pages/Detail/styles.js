@@ -18,8 +18,9 @@ export default StyleSheet.create({
         padding: 24,
         borderRadius: 8,
         backgroundColor: '#fff',
-        marginTop: 0,
-        marginBottom: 8
+        marginTop: 8,
+        marginBottom: 8,
+        maxHeight: '55%'
     },
 
     incidentProperty: {
@@ -31,6 +32,7 @@ export default StyleSheet.create({
     incidentValue: {
         marginTop: 8,
         fontSize: 15,
+        textAlign: 'justify',
         marginBottom: 14,
         color: '#737380'
     },
